@@ -1,18 +1,32 @@
 Inputs: instr[16];
 Outputs: cToM, loadA, loadD, loadM, op1, op2[2], opCode[4], jmpIfZ, constant[15];
 
-Parts: not16 NOT, nand NAND, andA AND, activeA AND, notnand NOT, andD AND,
-  andM AND, muxM MUX, andjmp AND;
+Parts: MUXLOADM MUX, MUXLOADA MUX, MUXLOADD MUX,
+       MUXJMPIFZ MUX,
+       ADEMUX4WADDR DEMUX4W, BAND00 AND4B, BAND01 AND4B,
+       BAND10 AND4B, BAND11 AND4B, COR4WA OR4W, COR4WM OR4W, COR4WD OR4W;
 
-Wires:
-  instr[16]->cToM, instr[1:15]->constant,
-  instr[7:10]->opCode, instr[11:12]->op2, instr[13]->op1,
-  andjmp.out->jmpIfZ, muxM.out->loadM, andD.out->loadD, activeA.out->loadA,
-  instr[6]->andjmp.in1, not16.out->andjmp.in2,
-  instr[16]->not16.in, not16.out->activeA.in2, not16.out->andD.in2,
-  andA.out->activeA.in1, notnand.out->andD.in1, nand.out->notnand.in,
-  instr[14]->andA.in1, nand.out->andA.in2,
-  instr[14]->nand.in1, instr[15]->nand.in2, nand.out->andM.in2,
-  instr[15]->andM.in1, andM.out->muxM.in1,
-  instr[16]->muxM.in2, instr[16]->muxM.sel
-  ;
+Wires: 
+  1->ADEMUX4WADDR.in, instr[14:15]->ADEMUX4WADDR.sel,
+  
+  ADEMUX4WADDR.out1->BAND00.in1, 0000->BAND00.in2,
+  ADEMUX4WADDR.out2->BAND01.in1, 0100->BAND01.in2,
+  ADEMUX4WADDR.out3->BAND10.in1, 0010->BAND10.in2,
+  ADEMUX4WADDR.out4->BAND11.in1, 0001->BAND11.in2,
+  
+  BAND00.out[3]->COR4WA.in[4], BAND00.out[2]->COR4WM.in[4],
+  BAND01.out[3]->COR4WA.in[3], BAND01.out[2]->COR4WM.in[3],
+  BAND10.out[3]->COR4WA.in[2], BAND10.out[2]->COR4WM.in[2],
+  BAND11.out[3]->COR4WA.in[1], BAND11.out[2]->COR4WM.in[1],
+  BAND00.out[1]->COR4WD.in[4], BAND01.out[1]->COR4WD.in[3],
+  BAND10.out[1]->COR4WD.in[2], BAND11.out[1]->COR4WD.in[1],
+  
+  COR4WA.out->MUXLOADA.in1, 0->MUXLOADA.in2, instr[16]->MUXLOADA.sel,
+  COR4WM.out->MUXLOADM.in1, 1->MUXLOADM.in2, instr[16]->MUXLOADM.sel,
+  COR4WD.out->MUXLOADD.in1, instr[16]->MUXLOADD.sel,
+  instr[6]->MUXJMPIFZ.in1, 0->MUXJMPIFZ.in2, instr[16]->MUXJMPIFZ.sel,
+  
+  instr[16]->cToM, MUXLOADA.out->loadA, MUXLOADM.out->loadM, MUXLOADD.out->loadD,
+  instr[13]->op1, instr[11:12]->op2, instr[7:10]->opCode, 
+  MUXJMPIFZ.out->jmpIfZ, instr[1:15]->constant
+;

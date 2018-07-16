@@ -1,38 +1,26 @@
-Inputs: in, sel[2];
+Inputs: in, sel[2];
 Outputs: out1, out2, out3, out4;
 
-// 1. specify the components you want to use here
-Parts:
-  not1 NOT,
-  not2 NOT,
-  and1a AND,
-  and1b AND,
-  and2a AND,
-  and2b AND,
-  and3a AND,
-  and3b AND,
-  and4a AND,
-  and4b AND
-  ;
+// 3 NOTs, 4 AND4Bs
+Parts: NOT1A NOT, NOT1B NOT, AND4B2A AND4B, AND4B3A AND4B;
 
-// 2. wire them up
-Wires:
-  and1a.out -> out1,  and2a.out -> out2,  and3a.out -> out3,  and4a.out -> out4,
-  in -> and1a.in1,  in -> and2a.in1,  in -> and3a.in1,  in -> and4a.in1,
-  sel[1] -> not1.in,  sel[2] -> not2.in,
+// NOT1A = (0)0  [4,3]
+// NOT2A = 0(0)  [2,1]
+// sel[2] = (1)0 [4,3]
+// sel[1] = 0(1) [2,1]
+
+Wires: 
+  sel[2]->NOT1A.in, sel[1]->NOT1B.in,
   
-  and1b.out -> and1a.in2,  and2b.out -> and2a.in2,
-  and3b.out -> and3a.in2,  and4b.out -> and4a.in2,
-
-  not1.out -> and1b.in1,
-  not2.out -> and1b.in2,
-
-  sel[1] -> and2b.in1,
-  not2.out -> and2b.in2,
-
-  not1.out -> and3b.in1,
-  sel[2] -> and3b.in2,
-
-  sel[1] -> and4b.in1,
-  sel[2] -> and4b.in2
-  ;
+  NOT1A.out->AND4B2A.in1[4], NOT1B.out->AND4B2A.in2[4], //00
+  NOT1A.out->AND4B2A.in1[3], sel[1]->AND4B2A.in2[3],    //01
+  sel[2]->AND4B2A.in1[2], NOT1B.out->AND4B2A.in2[2],    //10
+  sel[2]->AND4B2A.in1[1], sel[1]->AND4B2A.in2[1],       //11
+  
+  AND4B2A.out->AND4B3A.in1, in->AND4B3A.in2,
+  
+  AND4B3A.out[4]->out1,
+  AND4B3A.out[3]->out2,
+  AND4B3A.out[2]->out3,
+  AND4B3A.out[1]->out4
+;

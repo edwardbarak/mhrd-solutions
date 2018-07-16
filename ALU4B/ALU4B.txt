@@ -1,39 +1,30 @@
 Inputs: in1[4], in2[4], opCode[4];
 Outputs: out[4], negative, zero;
 
-Parts: not1 NOT4B, not2 NOT4B, notout NOT4B,
-       mux1 MUX4B, mux2 MUX4B, muxout MUX4B, muxop MUX4B,
-       add ADDER4B, nand NAND4B, or OR4W, and AND, notzero NOT;
+// 1. specify the components you want to use here
+Parts: ANOT4B1 NOT4B, AMUX4B1 MUX4B, BNOT4B1 NOT4B, BMUX4B1 MUX4B, 
+       CADD4B1 ADDER4B, CNAND4B1 NAND4B, DMUX4B1 MUX4B, ENOT4B1 NOT4B, 
+       EMUX4B1 MUX4B, FNOT4B1 NOT4B, FAND1 AND, FAND2 AND, FAND3 AND
+;
+// 2. wire them up
+Wires: 
+  in1->ANOT4B1.in, in1->AMUX4B1.in1, ANOT4B1.out->AMUX4B1.in2, 
+  opCode[4]->AMUX4B1.sel,
+  
+  in2->BNOT4B1.in, in2->BMUX4B1.in1, BNOT4B1.out->BMUX4B1.in2,
+  opCode[3]->BMUX4B1.sel,
+  
+  AMUX4B1.out->CADD4B1.in1, BMUX4B1.out->CADD4B1.in2,
+  AMUX4B1.out->CNAND4B1.in1, BMUX4B1.out->CNAND4B1.in2,
+  
+  CADD4B1.out->DMUX4B1.in1, CNAND4B1.out->DMUX4B1.in2, opCode[2]->DMUX4B1.sel,
+  
+  DMUX4B1.out->ENOT4B1.in, DMUX4B1.out->EMUX4B1.in1, ENOT4B1.out->EMUX4B1.in2,
+  opCode[1]->EMUX4B1.sel, 
+  
+  EMUX4B1.out->out, EMUX4B1.out[4]->negative, EMUX4B1.out->FNOT4B1.in,
+  FNOT4B1.out[4]->FAND1.in1, FNOT4B1.out[3]->FAND1.in2, 
+  FNOT4B1.out[2]->FAND2.in1, FNOT4B1.out[1]->FAND2.in2,
+  FAND1.out->FAND3.in1, FAND2.out->FAND3.in2, FAND3.out->zero
 
-Wires:
-  // wire opcodes to mux branches
-  opCode[4] -> mux1.sel , opCode[3] -> mux2.sel,
-  opCode[2] -> muxop.sel, opCode[1] -> muxout.sel,
-
-  // negate in1?
-  in1 -> not1.in, not1.out -> mux1.in2, in1 -> mux1.in1,
-  // negate in2?
-  in2 -> not2.in, not2.out -> mux2.in2, in2 -> mux2.in1,
-
-  0 -> add.carryIn,
-  // add or nand 1 & 2?
-  // ------------------
-  // sel=0  add 1 & 2
-  mux1.out -> add.in1, mux2.out -> add.in2,
-  // sel=1 nand 1 & 2
-  mux1.out -> nand.in1, mux2.out -> nand.in2,
-  add.out -> muxop.in1, nand.out -> muxop.in2,
-
-  // bitwise negate out?
-  muxop.out -> notout.in, notout.out -> muxout.in2,
-  muxop.out -> muxout.in1,
-
-  // output
-  muxout.out -> out,
-
-  // is output zero?
-  muxout.out -> or.in, or.out -> notzero.in, notzero.out -> zero,
-
-  // is output negative?
-  muxout.out[4] -> and.in1, 1 -> and.in2, and.out -> negative
-  ;
+;

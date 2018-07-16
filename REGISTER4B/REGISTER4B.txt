@@ -2,25 +2,21 @@ Inputs: in[4], load;
 Outputs: out[4];
 
 // 1. specify the components you want to use here
-Parts:
-  reg1 REGISTER,
-  reg2 REGISTER,
-  reg3 REGISTER,
-  reg4 REGISTER
-  ;
+Parts: NOT1A NOT, AND2A AND4B, AND2B AND4B, OR3A OR4B, DFF4A DFF, DFF4B DFF, 
+  DFF4C DFF, DFF4D DFF;
 
 // 2. wire them up
-Wires:
-  load -> reg1.load,
-  load -> reg2.load,
-  load -> reg3.load,
-  load -> reg4.load,
-  in[1] -> reg1.in,
-  in[2] -> reg2.in,
-  in[3] -> reg3.in,
-  in[4] -> reg4.in,
-  reg1.out -> out[1],
-  reg2.out -> out[2],
-  reg3.out -> out[3],
-  reg4.out -> out[4]
-  ;
+Wires: 
+  load->NOT1A.in,
+  
+  DFF4A.out->AND2A.in1[4], DFF4B.out->AND2A.in1[3], 
+  DFF4C.out->AND2A.in1[2], DFF4D.out->AND2A.in1[1], NOT1A.out->AND2A.in2, 
+  in->AND2B.in1, load->AND2B.in2,
+  
+  AND2A.out->OR3A.in1, AND2B.out->OR3A.in2,
+  
+  OR3A.out[4]->DFF4A.in, OR3A.out[3]->DFF4B.in, OR3A.out[2]->DFF4C.in,
+  OR3A.out[1]->DFF4D.in,
+  
+  DFF4A.out->out[4], DFF4B.out->out[3], DFF4C.out->out[2], DFF4D.out->out[1] 
+;

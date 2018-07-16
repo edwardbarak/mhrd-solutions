@@ -3,16 +3,20 @@ Outputs: out[4];
 
 // 1. specify the components you want to use here
 Parts:
-  not1 NOT,
-  not2 NOT,
-  not3 NOT,
-  not4 NOT
-  ;
+  NOT1 NOT,
+  NOT2 NOT,
+  NOT3 NOT,
+  NOT4 NOT
+;
 
 // 2. wire them up
 Wires:
-  in[1] -> not1.in, not1.out -> out[1],
-  in[2] -> not2.in, not2.out -> out[2],
-  in[3] -> not3.in, not3.out -> out[3],
-  in[4] -> not4.in, not4.out -> out[4]
-  ;
+  in[1] -> NOT1.in,
+  NOT1.out -> out[1],
+  in[2] -> NOT2.in,
+  NOT2.out -> out[2],
+  in[3] -> NOT3.in,
+  NOT3.out -> out[3],
+  in[4] -> NOT4.in,
+  NOT4.out -> out[4]
+;

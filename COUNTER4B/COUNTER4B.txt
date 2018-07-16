@@ -1,22 +1,24 @@
 Inputs: in[4], load, reset;
 Outputs: out[4];
 
-// 1. specify the components you want to use here
-Parts: loadmux MUX4B, resetmux MUX4B, reg REGISTER4B, add ADDER4B;
+Parts: ANOT1 NOT, AOR1 OR, ANOT2 NOT, AMUX4B1 MUX4B,
+       BA4B1 ADDER4B, BNAND4B1 NAND4B, BOR4W1 OR4W, BMUX4B1 MUX4B,
+       COR1 OR, CNOT1 NOT, CMUX4B1 MUX4B,
+       DREG4B REGISTER4B;
 
-// 2. wire them up
-Wires:
-  in -> loadmux.in2,
-  load -> loadmux.sel,
-  add.out -> loadmux.in1,
+Wires: 
+  reset->AOR1.in1, load->ANOT1.in, ANOT1.out->AOR1.in2, AOR1.out->ANOT2.in,
+  ANOT2.out->AMUX4B1.sel, 0000->AMUX4B1.in1, in->AMUX4B1.in2,
+  
+  DREG4B.out->BA4B1.in1, 0001->BA4B1.in2, DREG4B.out->BNAND4B1.in1, 
+  1111->BNAND4B1.in2, 0000->BMUX4B1.in1, BA4B1.out->BMUX4B1.in2, 
+  BNAND4B1.out->BOR4W1.in, BOR4W1.out->BMUX4B1.sel,
+  
+  AMUX4B1.out->CMUX4B1.in1, BMUX4B1.out->CMUX4B1.in2, reset->COR1.in1, 
+  load->COR1.in2, COR1.out->CNOT1.in, CNOT1.out->CMUX4B1.sel,
+  
+  CMUX4B1.out->DREG4B.in, 1->DREG4B.load,
+  
+  DREG4B.out->out
 
-  loadmux.out -> resetmux.in1,
-  0 -> resetmux.in2,
-  reset -> resetmux.sel,
-
-  resetmux.out -> reg.in,
-  1 -> reg.load,
-  reg.out -> out,
-  reg.out -> add.in1,
-  1 -> add.in2[1]
-  ;
+;

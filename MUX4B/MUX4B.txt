@@ -1,22 +1,17 @@
 Inputs: in1[4], in2[4], sel;
 Outputs: out[4];
 
-// 1. specify the components you want to use here
-Parts:
-  and1 AND4B,
-  and2 AND4B,
-  not NOT4B,
-  or OR4B
-  ;
+Parts: 
+  NAND1 NAND, AND1 AND, AND4B2 AND4B, AND4B3 AND4B, OR4B1 OR4B
+;
 
-// 2. wire them up
-Wires:
-  in1 -> and1.in1,
-  not.out -> and1.in2,
-         and1.out -> or.in1,
-                     or.out -> out,
-         and2.out -> or.in2,
-  in2 -> and2.in1,
-  sel -> and2.in2,
-  sel -> not.in
-  ;
+Wires: 
+  sel->NAND1.in1, sel->NAND1.in2,
+  NAND1.out->AND4B2.in1, in1->AND4B2.in2,
+  
+  sel->AND1.in1, sel->AND1.in2, 
+  AND1.out->AND4B3.in1, in2->AND4B3.in2,
+  
+  AND4B2.out->OR4B1.in1, AND4B3.out->OR4B1.in2,
+  OR4B1.out->out
+;
